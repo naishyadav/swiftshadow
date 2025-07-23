@@ -23,6 +23,10 @@ async def Monosans(
     for proxy_dict in proxy_dicts:
         if proxy_dict["protocol"] != protocol:
             continue
+        if ("country" not in proxy_dict["geolocation"].keys() # Avoid errors where geolocation is none
+            and len(countries) != 0
+        ):
+            continue
         if (
             len(countries) != 0
             and proxy_dict["geolocation"]["country"]["iso_code"] not in countries
