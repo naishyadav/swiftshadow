@@ -90,7 +90,8 @@ async def OpenProxyList(
     countries: list[str] = [], protocol: Literal["http", "https"] = "http"
 ):
     results = await GenericPlainTextProxyProvider(
-        "https://api.openproxylist.xyz/http.txt", "http"
+        "https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/HTTPS_RAW.txt",
+        "http",
     )
     return results
 
@@ -118,15 +119,6 @@ async def Anonym0usWork1221(
 ):
     url = f"https://github.com/Anonym0usWork1221/Free-Proxies/raw/refs/heads/main/proxy_files/{protocol}_proxies.txt"
     results = await GenericPlainTextProxyProvider(url, protocol)
-    return results
-
-
-async def ProxySpace(
-    countries: list[str] = [], protocol: Literal["http", "https"] = "http"
-):
-    results = await GenericPlainTextProxyProvider(
-        "https://proxyspace.pro/http.txt", "http"
-    )
     return results
 
 
@@ -188,7 +180,6 @@ Providers: list[Provider] = [
     ),
     Provider(providerFunction=Mmpx12, countryFilter=False, protocols=["http", "https"]),
     Provider(providerFunction=GoodProxy, countryFilter=False, protocols=["http"]),
-    Provider(providerFunction=ProxySpace, countryFilter=False, protocols=["http"]),
     Provider(providerFunction=OpenProxyList, countryFilter=False, protocols=["http"]),
     Provider(providerFunction=ProxyDB, countryFilter=True, protocols=["http", "https"]),
 ]
