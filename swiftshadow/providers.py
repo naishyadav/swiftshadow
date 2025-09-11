@@ -117,15 +117,6 @@ async def Anonym0usWork1221(
     return results
 
 
-async def ProxySpace(
-    countries: list[str] = [], protocol: Literal["http", "https"] = "http"
-):
-    results = await GenericPlainTextProxyProvider(
-        "https://proxyspace.pro/http.txt", "http"
-    )
-    return results
-
-
 async def ProxyDB(
     countries: list[str] = [], protocol: Literal["http", "https"] = "http"
 ):
@@ -184,7 +175,6 @@ Providers: list[Provider] = [
     ),
     Provider(providerFunction=Mmpx12, countryFilter=False, protocols=["http", "https"]),
     Provider(providerFunction=GoodProxy, countryFilter=False, protocols=["http"]),
-    Provider(providerFunction=ProxySpace, countryFilter=False, protocols=["http"]),
     Provider(providerFunction=OpenProxyList, countryFilter=False, protocols=["http"]),
     Provider(providerFunction=ProxyDB, countryFilter=True, protocols=["http", "https"]),
 ]
