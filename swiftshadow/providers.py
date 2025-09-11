@@ -86,7 +86,8 @@ async def OpenProxyList(
     countries: list[str] = [], protocol: Literal["http", "https"] = "http"
 ):
     results = await GenericPlainTextProxyProvider(
-        "https://api.openproxylist.xyz/http.txt", "http"
+        "https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/HTTPS_RAW.txt",
+        "http",
     )
     return results
 
