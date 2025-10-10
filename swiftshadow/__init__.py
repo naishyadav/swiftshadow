@@ -19,7 +19,7 @@ def QuickProxy(
     Returns:
         proxyObject (Proxy): A working proxy object if found or else None.
     """
-    for provider in Providers:
+    for provider in Providers.values():
         if protocol not in provider.protocols:
             continue
         if (len(countries) != 0) and (not provider.countryFilter):
