@@ -12,6 +12,7 @@ from appdirs import user_cache_dir
 
 from swiftshadow.cache import checkExpiry, getExpiry
 from swiftshadow.exceptions import UnsupportedProxyProtocol
+from swiftshadow.helpers import deduplicateProxies
 from swiftshadow.models import CacheData
 from swiftshadow.models import Proxy as Proxy
 from swiftshadow.providers import Providers
@@ -182,6 +183,7 @@ class ProxyInterface:
         if len(self.proxies) == 0:
             raise ValueError("No proxies where found for the current filter settings.")
 
+        self.proxies = deduplicateProxies(self.proxies)
         async with aiofiles.open(
             self.cacheFolderPath.joinpath("swiftshadow.pickle"), "wb+"
         ) as cacheFile:
@@ -251,6 +253,7 @@ class ProxyInterface:
         if len(self.proxies) == 0:
             raise ValueError("No proxies where found for the current filter settings.")
 
+        self.proxies = deduplicateProxies(self.proxies)
         with open(
             self.cacheFolderPath.joinpath("swiftshadow.pickle"), "wb+"
         ) as cacheFile:
