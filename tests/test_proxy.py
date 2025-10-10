@@ -6,6 +6,7 @@ from appdirs import user_cache_dir
 
 from swiftshadow.classes import ProxyInterface
 from swiftshadow.models import Proxy
+from swiftshadow.providers import Providers
 
 
 def test_basic_proxy():
@@ -61,3 +62,11 @@ def test_async_update_autorotate():
     run(swift.async_update())
     assert isinstance(swift.get(), Proxy)
     assert isinstance(swift.get(), Proxy)
+
+
+def test_provider_selection():
+    selectedProvider = list(Providers.keys())[0]
+    swift = ProxyInterface(selectedProviders=[selectedProvider])
+    proxy = swift.get()
+    assert isinstance(proxy, Proxy)
+    assert swift.providers[0] == Providers[selectedProvider]

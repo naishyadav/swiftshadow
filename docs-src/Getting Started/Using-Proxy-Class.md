@@ -45,6 +45,23 @@ swift = ProxyInterface(protocol='https')
 
 ---
 
+# Selecting Providers
+
+Swiftshadow allows the user to select only specific Providers from a list of available Providers to circumvent trying to fetch proxies from unavailable Providers. If you come across a Provider that is consistently failing please make sure to report it on the GitHub for its removal or remedy.
+
+Providers can be imported as needed from the available ones in `swiftshadow.providers`
+
+```python title="Provider Selection"
+from swiftshadow.classes import ProxyInterface
+from swiftshadow.providers import Monosans
+
+swift = ProxyInterface(selectedProviders=[Monosans])
+print(swift.get())
+```
+
+---
+
+
 # Proxy Rotation
 
 ## Manual Rotation

@@ -5,16 +5,17 @@ from pathlib import Path
 from pickle import dump, dumps, load, loads
 from random import choice
 from sys import stdout
-from typing import Literal
+from typing import Literal, Any, Callable, Coroutine
 
 import aiofiles
 from appdirs import user_cache_dir
 
 from swiftshadow.cache import checkExpiry, getExpiry
 from swiftshadow.exceptions import UnsupportedProxyProtocol
-from swiftshadow.models import CacheData
+from swiftshadow.helpers import deduplicateProxies
+from swiftshadow.models import CacheData, Provider
 from swiftshadow.models import Proxy as Proxy
-from swiftshadow.providers import Providers
+from swiftshadow.providers import Providers as ProvidersMap
 
 logger = getLogger("swiftshadow")
 logger.setLevel(INFO)
@@ -34,6 +35,7 @@ class ProxyInterface:
     Attributes:
         countries (list[str]): List of ISO country codes to filter proxies by (e.g., ["US", "CA"]).
         protocol (Literal['https', 'http']): Proxy protocol to use. Defaults to 'http'.
+        selectedProviders (Callable[[list[str], Literal["http", "https"]], Coroutine[Any, Any, list[Proxy]]]]): Selected list of providers to fetch proxies from. Defaults to empty meaning all available Providers.
         maxproxies (int): Maximum number of proxies to collect from providers. Defaults to 10.
         autorotate (bool): Whether to automatically rotate proxy on each get() call. Defaults to False.
         autoUpdate (bool): Whether to automatically update proxies upon class initalisation. Defaults to True.
@@ -62,6 +64,11 @@ class ProxyInterface:
         self,
         countries: list[str] = [],
         protocol: Literal["https", "http"] = "http",
+        selectedProviders: list[
+            Callable[
+                [list[str], Literal["http", "https"]], Coroutine[Any, Any, list[Proxy]]
+            ]
+        ] = [],
         maxProxies: int = 10,
         autoRotate: bool = False,
         autoUpdate: bool = True,
@@ -75,6 +82,7 @@ class ProxyInterface:
         Args:
             countries: List of ISO country codes to filter proxies. Empty list = no filtering.
             protocol: Proxy protocol to retrieve. Choose between 'http' or 'https'.
+            selectedProviders (list[Providers]): Selected list of providers to fetch proxies from. Defaults to empty meaning all available Providers.
             maxProxies: Maximum proxies to collect from all providers combined.
             autoRotate: Enable automatic proxy rotation on every get() call.
             autoUpdate (bool): Whether to automatically update proxies upon class initalisation.
@@ -93,6 +101,18 @@ class ProxyInterface:
                 } is not supported by swiftshadow, please choose between HTTP or HTTPS"
             )
         self.protocol: Literal["https", "http"] = protocol
+        if selectedProviders != []:
+            providers: list[Provider] = []
+            for i in selectedProviders:
+                try:
+                    providers.append(ProvidersMap[i])
+                except KeyError:
+                    raise ValueError(
+                        f"Unkown provider {i.__name__} in the list of Selected Providers."
+                    )
+            self.providers: list[Provider] = providers
+        else:
+            self.providers: list[Provider] = list(ProvidersMap.values())
 
         self.maxproxies: int = maxProxies
         self.autorotate: bool = autoRotate
@@ -161,7 +181,7 @@ class ProxyInterface:
 
         self.proxies = []
 
-        for provider in Providers:
+        for provider in self.providers:
             if self.protocol not in provider.protocols:
                 continue
             if (len(self.countries) != 0) and (not provider.countryFilter):
@@ -184,6 +204,7 @@ class ProxyInterface:
                 raise ValueError("No proxies were found for the current filter settings. Tip: https proxies can be rare; recommend setting protocol to http")
             raise ValueError("No proxies were found for the current filter settings.")
 
+        self.proxies = deduplicateProxies(self.proxies)
         async with aiofiles.open(
             self.cacheFolderPath.joinpath("swiftshadow.pickle"), "wb+"
         ) as cacheFile:
@@ -232,7 +253,7 @@ class ProxyInterface:
 
         self.proxies = []
 
-        for provider in Providers:
+        for provider in self.providers:
             if self.protocol not in provider.protocols:
                 continue
             if (len(self.countries) != 0) and (not provider.countryFilter):
@@ -253,6 +274,7 @@ class ProxyInterface:
         if len(self.proxies) == 0:
             raise ValueError("No proxies were found for the current filter settings.")
 
+        self.proxies = deduplicateProxies(self.proxies)
         with open(
             self.cacheFolderPath.joinpath("swiftshadow.pickle"), "wb+"
         ) as cacheFile:

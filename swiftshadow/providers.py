@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any, Callable, Coroutine, Literal
 import aiohttp
 
 from requests import get
@@ -168,18 +168,37 @@ async def ProxyDB(
     return proxies
 
 
-Providers: list[Provider] = [
-    Provider(providerFunction=ProxyScrape, countryFilter=True, protocols=["http"]),
-    Provider(providerFunction=Monosans, countryFilter=True, protocols=["http"]),
-    Provider(providerFunction=MuRongPIG, countryFilter=False, protocols=["http"]),
-    Provider(providerFunction=Thespeedx, countryFilter=False, protocols=["http"]),
-    Provider(
+Providers: dict[
+    Callable[[list[str], Literal["http", "https"]], Coroutine[Any, Any, list[Proxy]]],
+    Provider,
+] = {
+    ProxyScrape: Provider(
+        providerFunction=ProxyScrape, countryFilter=True, protocols=["http"]
+    ),
+    Monosans: Provider(
+        providerFunction=Monosans, countryFilter=True, protocols=["http"]
+    ),
+    MuRongPIG: Provider(
+        providerFunction=MuRongPIG, countryFilter=False, protocols=["http"]
+    ),
+    Thespeedx: Provider(
+        providerFunction=Thespeedx, countryFilter=False, protocols=["http"]
+    ),
+    Anonym0usWork1221: Provider(
         providerFunction=Anonym0usWork1221,
         countryFilter=False,
         protocols=["http", "https"],
     ),
-    Provider(providerFunction=Mmpx12, countryFilter=False, protocols=["http", "https"]),
-    Provider(providerFunction=GoodProxy, countryFilter=False, protocols=["http"]),
-    Provider(providerFunction=OpenProxyList, countryFilter=False, protocols=["http"]),
-    Provider(providerFunction=ProxyDB, countryFilter=True, protocols=["http", "https"]),
-]
+    Mmpx12: Provider(
+        providerFunction=Mmpx12, countryFilter=False, protocols=["http", "https"]
+    ),
+    GoodProxy: Provider(
+        providerFunction=GoodProxy, countryFilter=False, protocols=["http"]
+    ),
+    OpenProxyList: Provider(
+        providerFunction=OpenProxyList, countryFilter=False, protocols=["http"]
+    ),
+    ProxyDB: Provider(
+        providerFunction=ProxyDB, countryFilter=True, protocols=["http", "https"]
+    ),
+}

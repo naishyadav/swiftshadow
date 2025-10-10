@@ -46,3 +46,14 @@ async def GenericPlainTextProxyProvider(
     proxies: list[Proxy] = plaintextToProxies(raw, protocol=protocol)
     results = await validate_proxies(proxies)
     return results
+
+
+def deduplicateProxies(proxies: list[Proxy]) -> list[Proxy]:
+    seen: list[str] = []
+    final: list[Proxy] = []
+    for proxy in proxies:
+        proxy_str: str = proxy.as_string()
+        if proxy_str not in seen:
+            final.append(proxy)
+            seen.append(proxy_str)
+    return final
