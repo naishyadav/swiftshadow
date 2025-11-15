@@ -96,9 +96,7 @@ class ProxyInterface:
 
         if protocol not in ["https", "http"]:
             raise UnsupportedProxyProtocol(
-                f"Protocol {
-                    protocol
-                } is not supported by swiftshadow, please choose between HTTP or HTTPS"
+                f"Protocol {protocol} is not supported by swiftshadow, please choose between HTTP or HTTPS"
             )
         self.protocol: Literal["https", "http"] = protocol
         if selectedProviders != []:
@@ -166,9 +164,7 @@ class ProxyInterface:
                     self.proxies = cache.proxies
                     logger.info("Loaded proxies from cache.")
                     logger.debug(
-                        f"Cache with {len(cache.proxies)} proxies, expire in {
-                            cache.expiryIn
-                        }"
+                        f"Cache with {len(cache.proxies)} proxies, expire in {cache.expiryIn}"
                     )
                     self.current = self.proxies[0]
                     self.cacheExpiry = cache.expiryIn
@@ -190,9 +186,7 @@ class ProxyInterface:
                 self.countries, self.protocol
             )
             logger.debug(
-                f"{len(providerProxies)} proxies from {
-                    provider.providerFunction.__name__
-                }"
+                f"{len(providerProxies)} proxies from {provider.providerFunction.__name__}"
             )
             self.proxies.extend(providerProxies)
 
@@ -238,9 +232,7 @@ class ProxyInterface:
                     self.proxies = cache.proxies
                     logger.info("Loaded proxies from cache.")
                     logger.debug(
-                        f"Cache with {len(cache.proxies)} proxies, expire in {
-                            cache.expiryIn
-                        }"
+                        f"Cache with {len(cache.proxies)} proxies, expire in {cache.expiryIn}"
                     )
                     self.current = self.proxies[0]
                     logger.debug(f"Cache set to expire at {cache.expiryIn}")
@@ -262,9 +254,7 @@ class ProxyInterface:
                 provider.providerFunction(self.countries, self.protocol)
             )
             logger.debug(
-                f"{len(providerProxies)} proxies from {
-                    provider.providerFunction.__name__
-                }"
+                f"{len(providerProxies)} proxies from {provider.providerFunction.__name__}"
             )
             self.proxies.extend(providerProxies)
 
